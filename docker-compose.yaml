@@ -1,0 +1,65 @@
+version: '3.7'
+
+services:
+    db:
+        restart: always
+        image: postgres:latest
+        volumes:
+            - pgdata:/var/lib/postgresql/data/
+        environment:
+            POSTGRES_USER: django
+            POSTGRES_PASSWORD: django
+
+#    redis:
+#        image: redis:6.0-rc3-alpine
+#        container_name: redis
+#    #    command: ["redis-server", "--appendonly", "yes"]
+#        hostname: redis
+#        restart: always
+    api:
+        build: ./b2b
+        command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+        volumes:
+            - ./b2b:/django
+        ports:
+            - "8000:8000"
+        links:
+            - db
+
+        depends_on:
+            - db
+        environment:
+            DEBUG: "true"
+            DATABASE_NAME: django
+            DATABASE_USER: django
+            DATABASE_PASSWORD: django
+            DATABASE_SERVICE_HOST: database
+    #adminer:
+    #    image: adminer
+    #    restart: always
+    #    ports:
+    #        - 8080:8080
+    #    links:
+    #        - db
+#    celery:
+#        build: ./bank_operations
+#        command: celery -A bank_operations worker -B -l info
+#        volumes:
+#            - ./bank_operations:/django
+#        links:
+#            - api
+#            - redis
+#            - db
+#    nginx:
+#        build: ./nginx
+#        expose:
+#            - 8080
+#        ports:
+#            - 80:8080
+#        depends_on:
+#            - api
+#        volumes:
+#            - static_volume:/usr/src/app/staticfiles
+volumes:
+    pgdata:
+    static_volume:
