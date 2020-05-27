@@ -15,11 +15,15 @@ from .serializers import CompanySerializer, ProductSerializer, OrderPositionSeri
 class CompanyViewSet(ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+    filterset_fields = ['name', 'type']
+    search_fields = ['name']
 
 
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    search_fields = ['name']
+    filterset_fields = ['name']
 
     def perform_create(self, serializer):
         product = serializer.save(company = Company.objects.get(pk=self.request.data['company']['id']))
@@ -34,10 +38,18 @@ class ProductViewSet(ModelViewSet):
 class OrderViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    filterset_fields = ['company_seller__name', 'company_buyer__name']
+    search_fields = ['company_seller__name', 'company_buyer__name', '']
 
     def create(self, request, *args, **kwargs):
         company_seller = Company.objects.get(pk=self.request.data['seller']['id'])
+        if not company_seller.is_active:
+            return Response({'error': 'Company is not active'.format(company_seller.name)})
+
         company_buyer = Company.objects.get(pk=self.request.data['buyer']['id'])
+        if not company_seller.is_active:
+            return Response({'error': 'Company is not active'.format(company_buyer.name)})
+
         order = Order.objects.create(company_seller=company_seller, company_buyer=company_buyer)
         order.save()
 
@@ -45,6 +57,11 @@ class OrderViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         for position in positions:
             product = Product.objects.get(pk=position['product']['id'])
             quantity = position['quantity']
+            try:
+                quantity = float(quantity)
+            except ValueError:
+                return Response({'error': 'Quantity should be float'})
+
             elem_price = product.price
             sum_price = product.price * position['quantity']
             new_position = OrderPosition.objects.create(product=product,
@@ -64,8 +81,8 @@ class RemoveNoOrderBuyersView(DestroyAPIView):
     def delete(self, request, *args, **kwargs):
         company_orders = Order.objects.filter(company_buyer=OuterRef('pk'))
         queryset = Company.objects.annotate(count=Count(Subquery(company_orders.values('id')[:1]))).filter(type=1, count=0)
-        print('!!!!!', len(queryset))
 
+        print(len(queryset))
         for elem in queryset:
             elem.is_active = False
             elem.save()
