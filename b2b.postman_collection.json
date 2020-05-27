@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "d810c488-d6bd-44b0-91c5-7de143c78a63",
+		"name": "b2b",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://127.0.0.1:8000/api/v1/companies/",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"The best seller\",\n\t\"type\": 0\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/v1/companies/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"companies",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:8000/api/v1/products/",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Screws\",\n\t\"quantity\": 100,\n\t\"price\": 10,\n\t\"company\": {\n\t\t\"id\": 1\n\t}\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/v1/products/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"products",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://127.0.0.1:8000/api/v1/orders/",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"seller\": {\n\t\t\"id\": 1\n\t},\n\t\"buyer\": {\n\t\t\"id\": 2\n\t},\n\t\"positions\":[\n\t\t{\n\t\t\t\"product\": {\n\t\t\t\t\"id\": 2\n\t\t\t},\n\t\t\t\"quantity\": 20\n\t\t}\n\t\t]\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/v1/orders/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"orders",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
